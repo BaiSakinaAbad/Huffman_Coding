@@ -14,7 +14,7 @@ public class HuffmanForm {
 }
 
 class HuffmanFrame extends JFrame {
-    private JTextArea inputTextArea, outputTextArea, freqTableArea;
+    private JTextArea inputTextArea, freqTableArea, codeTableArea;
     private JTextField decodeInputField;
     private HuffmanEncoder encoder;
     private HuffmanTreePanel treePanel;
@@ -28,41 +28,53 @@ class HuffmanFrame extends JFrame {
         // Initialize encoder
         encoder = new HuffmanEncoder();
 
-        // Input Panel
+        // Input Panel (Top: Text area with Encode button on the right)
         JPanel inputPanel = new JPanel(new BorderLayout());
-        inputTextArea = new JTextArea(5, 30);
+        inputTextArea = new JTextArea(2, 40);
         inputTextArea.setLineWrap(true);
+        inputTextArea.setText("enter a string here..."); // Placeholder text
         inputPanel.add(new JScrollPane(inputTextArea), BorderLayout.CENTER);
-        JButton encodeButton = new JButton("Encode");
+        JButton encodeButton = new JButton("ENCODE");
         encodeButton.addActionListener(new EncodeButtonListener());
-        inputPanel.add(encodeButton, BorderLayout.SOUTH);
+        encodeButton.setBackground(new Color(255, 182, 193)); // Light pink background
+        encodeButton.setForeground(Color.BLACK); // Button text color - can be changed here
+        inputPanel.add(encodeButton, BorderLayout.EAST);
         add(inputPanel, BorderLayout.NORTH);
 
-        // Center Panel (split into frequency table and tree)
+        // Center Panel (Split into tree on the left, freq and code tables on the right)
         JPanel centerPanel = new JPanel(new BorderLayout());
 
-        // Frequency Table Area
-        freqTableArea = new JTextArea(10, 10);
-        freqTableArea.setEditable(false);
-        centerPanel.add(new JScrollPane(freqTableArea), BorderLayout.WEST);
-
-        // Tree Panel
+        // Tree Panel (Center-Left)
         treePanel = new HuffmanTreePanel();
         centerPanel.add(treePanel, BorderLayout.CENTER);
 
+        // Right Panel (Frequency table and code table stacked vertically)
+        JPanel rightPanel = new JPanel(new GridLayout(2, 1));
+
+        // Frequency Table Area
+        freqTableArea = new JTextArea(5, 15);
+        freqTableArea.setEditable(false);
+        freqTableArea.setBackground(new Color(216, 191, 216)); // Light purple background - can be changed here
+        rightPanel.add(new JScrollPane(freqTableArea));
+
+        // Character Code Table Area
+        codeTableArea = new JTextArea(5, 15);
+        codeTableArea.setEditable(false);
+        codeTableArea.setBackground(new Color(216, 191, 216)); // Light purple background - can be changed here
+        rightPanel.add(new JScrollPane(codeTableArea));
+
+        centerPanel.add(rightPanel, BorderLayout.EAST);
+
         add(centerPanel, BorderLayout.CENTER);
 
-        // Output Panel
-        outputTextArea = new JTextArea(10, 20);
-        outputTextArea.setEditable(false);
-        outputTextArea.setLineWrap(true);
-        add(new JScrollPane(outputTextArea), BorderLayout.EAST);
-
-        // Decode Panel
+        // Decode Panel (Bottom: Text field with Decode button on the right)
         JPanel decodePanel = new JPanel(new BorderLayout());
-        decodeInputField = new JTextField(30);
-        JButton decodeButton = new JButton("Decode");
+        decodeInputField = new JTextField(40);
+        decodeInputField.setText("enter code to decode"); // Placeholder text
+        JButton decodeButton = new JButton("DECODE");
         decodeButton.addActionListener(new DecodeButtonListener());
+        decodeButton.setBackground(new Color(255, 182, 193)); // Light pink background - can be changed here
+        decodeButton.setForeground(Color.BLACK); // Button text color
         decodePanel.add(decodeInputField, BorderLayout.CENTER);
         decodePanel.add(decodeButton, BorderLayout.EAST);
         add(decodePanel, BorderLayout.SOUTH);
@@ -72,14 +84,14 @@ class HuffmanFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             String input = inputTextArea.getText();
-            if (input.isEmpty()) {
+            if (input.isEmpty() || input.equals("enter a string here...")) {
                 JOptionPane.showMessageDialog(HuffmanFrame.this, "Please enter text to encode.");
                 return;
             }
 
             encoder.buildHuffmanTree(input);
             String encoded = encoder.encode(input);
-            outputTextArea.setText("Encoded: " + encoded + "\n\nHuffman Codes:\n" + encoder.getHuffmanCodesString());
+            codeTableArea.setText("Huffman Codes:\n" + encoder.getHuffmanCodesString());
             freqTableArea.setText(encoder.getFrequencyTable());
             treePanel.setRoot(encoder.getRoot());
             treePanel.repaint();
@@ -90,13 +102,13 @@ class HuffmanFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             String code = decodeInputField.getText();
-            if (code.isEmpty()) {
+            if (code.isEmpty() || code.equals("enter code to decode")) {
                 JOptionPane.showMessageDialog(HuffmanFrame.this, "Please enter binary code to decode.");
                 return;
             }
 
             String decoded = encoder.decode(code);
-            outputTextArea.append("\n\nDecoded: " + decoded);
+            JOptionPane.showMessageDialog(HuffmanFrame.this, "Decoded: " + decoded);
         }
     }
 }
@@ -121,9 +133,16 @@ class HuffmanTreePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (root != null) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        if (root == null) {
+            // Draw placeholder text if tree is empty
+            g2d.setColor(Color.BLACK);
+            g2d.drawString("empty tree", getWidth() / 2 - 30, getHeight() / 2);
+        } else {
             nodeCounter = 0; // Reset counter before drawing
-            drawTree(g, root, getWidth() / 2, 30, getWidth() / 4);
+            drawTree(g2d, root, getWidth() / 2, 30, getWidth() / 4);
         }
     }
 
@@ -134,9 +153,9 @@ class HuffmanTreePanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Draw node as a rectangle
-        g2d.setColor(Color.WHITE);
+        g2d.setColor(Color.WHITE); // Node background color - can be changed here
         g2d.fillRect(x - NODE_WIDTH / 2, y - NODE_HEIGHT / 2, NODE_WIDTH, NODE_HEIGHT);
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(Color.BLACK); // Node border color - can be changed here
         g2d.drawRect(x - NODE_WIDTH / 2, y - NODE_HEIGHT / 2, NODE_WIDTH, NODE_HEIGHT);
 
         // Determine label: character or "Nx" for internal nodes
@@ -147,12 +166,14 @@ class HuffmanTreePanel extends JPanel {
             nodeCounter++;
             label = "N" + nodeCounter + ":" + node.frequency;
         }
+        g2d.setColor(Color.BLACK); // Node text color - can be changed here
         g2d.drawString(label, x - NODE_WIDTH / 3, y + 5);
 
         // Draw children
         if (node.left != null) {
             int leftX = x - xOffset;
             int leftY = y + LEVEL_HEIGHT;
+            g2d.setColor(Color.BLACK); // Line color - can be changed here
             g2d.drawLine(x - NODE_WIDTH / 4, y + NODE_HEIGHT / 2, leftX + NODE_WIDTH / 4, leftY - NODE_HEIGHT / 2);
             g2d.drawString("0", x - xOffset / 2, y + LEVEL_HEIGHT / 2);
             drawTree(g2d, node.left, leftX, leftY, xOffset / 2);
@@ -160,6 +181,7 @@ class HuffmanTreePanel extends JPanel {
         if (node.right != null) {
             int rightX = x + xOffset;
             int rightY = y + LEVEL_HEIGHT;
+            g2d.setColor(Color.BLACK); // Line color - can be changed here
             g2d.drawLine(x + NODE_WIDTH / 4, y + NODE_HEIGHT / 2, rightX - NODE_WIDTH / 4, rightY - NODE_HEIGHT / 2);
             g2d.drawString("1", x + xOffset / 2, y + LEVEL_HEIGHT / 2);
             drawTree(g2d, node.right, rightX, rightY, xOffset / 2);
@@ -265,7 +287,7 @@ class HuffmanEncoder {
     }
 
     public String getFrequencyTable() {
-        StringBuilder sb = new StringBuilder("Frequency Table:\n");
+        StringBuilder sb = new StringBuilder("FREQUENCY TABLE:\n");
         for (Map.Entry<Character, Integer> entry : frequencyMap.entrySet()) {
             sb.append("'").append(entry.getKey()).append("': ").append(entry.getValue()).append("\n");
         }
