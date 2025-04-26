@@ -28,7 +28,7 @@ class HuffmanFrame extends JFrame {
         // Initialize encoder
         encoder = new HuffmanEncoder();
 
-        // Input Panel (Top: Text area with Encode button on the right)
+        // Input Panel
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputTextArea = new JTextArea(2, 40);
         inputTextArea.setLineWrap(true);
@@ -37,7 +37,7 @@ class HuffmanFrame extends JFrame {
         JButton encodeButton = new JButton("ENCODE");
         encodeButton.addActionListener(new EncodeButtonListener());
         encodeButton.setBackground(new Color(255, 182, 193)); // Light pink background
-        encodeButton.setForeground(Color.BLACK); // Button text color - can be changed here
+        encodeButton.setForeground(Color.BLACK); // Button text color
         inputPanel.add(encodeButton, BorderLayout.EAST);
         add(inputPanel, BorderLayout.NORTH);
 
@@ -54,26 +54,26 @@ class HuffmanFrame extends JFrame {
         // Frequency Table Area
         freqTableArea = new JTextArea(5, 15);
         freqTableArea.setEditable(false);
-        freqTableArea.setBackground(new Color(216, 191, 216)); // Light purple background - can be changed here
+        freqTableArea.setBackground(new Color(216, 191, 216)); // Light purple background
         rightPanel.add(new JScrollPane(freqTableArea));
 
         // Character Code Table Area
         codeTableArea = new JTextArea(5, 15);
         codeTableArea.setEditable(false);
-        codeTableArea.setBackground(new Color(216, 191, 216)); // Light purple background - can be changed here
+        codeTableArea.setBackground(new Color(216, 191, 216)); // Light purple background
         rightPanel.add(new JScrollPane(codeTableArea));
 
         centerPanel.add(rightPanel, BorderLayout.EAST);
 
         add(centerPanel, BorderLayout.CENTER);
 
-        // Decode Panel (Bottom: Text field with Decode button on the right)
+        // Decode Panel
         JPanel decodePanel = new JPanel(new BorderLayout());
         decodeInputField = new JTextField(40);
         decodeInputField.setText("enter code to decode"); // Placeholder text
         JButton decodeButton = new JButton("DECODE");
         decodeButton.addActionListener(new DecodeButtonListener());
-        decodeButton.setBackground(new Color(255, 182, 193)); // Light pink background - can be changed here
+        decodeButton.setBackground(new Color(255, 182, 193)); // Light pink background
         decodeButton.setForeground(Color.BLACK); // Button text color
         decodePanel.add(decodeInputField, BorderLayout.CENTER);
         decodePanel.add(decodeButton, BorderLayout.EAST);
@@ -153,12 +153,12 @@ class HuffmanTreePanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Draw node as a rectangle
-        g2d.setColor(Color.WHITE); // Node background color - can be changed here
+        g2d.setColor(Color.WHITE); // Node background color -
         g2d.fillRect(x - NODE_WIDTH / 2, y - NODE_HEIGHT / 2, NODE_WIDTH, NODE_HEIGHT);
-        g2d.setColor(Color.BLACK); // Node border color - can be changed here
+        g2d.setColor(Color.BLACK); // Node border color
         g2d.drawRect(x - NODE_WIDTH / 2, y - NODE_HEIGHT / 2, NODE_WIDTH, NODE_HEIGHT);
 
-        // Determine label: character or "Nx" for internal nodes
+        // "Nx" for internal nodes
         String label;
         if (node.left == null && node.right == null) {
             label = node.data + ":" + node.frequency;
@@ -173,7 +173,7 @@ class HuffmanTreePanel extends JPanel {
         if (node.left != null) {
             int leftX = x - xOffset;
             int leftY = y + LEVEL_HEIGHT;
-            g2d.setColor(Color.BLACK); // Line color - can be changed here
+            g2d.setColor(Color.BLACK); // Line color
             g2d.drawLine(x - NODE_WIDTH / 4, y + NODE_HEIGHT / 2, leftX + NODE_WIDTH / 4, leftY - NODE_HEIGHT / 2);
             g2d.drawString("0", x - xOffset / 2, y + LEVEL_HEIGHT / 2);
             drawTree(g2d, node.left, leftX, leftY, xOffset / 2);
@@ -181,7 +181,7 @@ class HuffmanTreePanel extends JPanel {
         if (node.right != null) {
             int rightX = x + xOffset;
             int rightY = y + LEVEL_HEIGHT;
-            g2d.setColor(Color.BLACK); // Line color - can be changed here
+            g2d.setColor(Color.BLACK); // Line color
             g2d.drawLine(x + NODE_WIDTH / 4, y + NODE_HEIGHT / 2, rightX - NODE_WIDTH / 4, rightY - NODE_HEIGHT / 2);
             g2d.drawString("1", x + xOffset / 2, y + LEVEL_HEIGHT / 2);
             drawTree(g2d, node.right, rightX, rightY, xOffset / 2);
